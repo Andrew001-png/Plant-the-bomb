@@ -8,16 +8,3 @@ export function CreateTeam(tag, name, color, spawnpoint) {
     team.Spawns.SpawnPointsGroups.Add(spawnpoint);
     return team;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
