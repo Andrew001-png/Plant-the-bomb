@@ -1,5 +1,5 @@
 import * as Room from 'pixel_combats/room';
-import * as Basic from 'pixel_combats/room';
+import * as Basic from 'pixel_combats/basic';
 import * as lib from './library.js';
 
 Room.BreackGraph.Damage = false;
