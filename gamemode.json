@@ -1,0 +1,29 @@
+{
+  "Name": "<B><color=#FFE4B5>Закладка</color> <color=#B0E0E6>бомбы</color></B>",
+  "Description": "<B>v1.2.1 (фиксы)</B>\nЗакладка бомбы прямиком из CS:GO!",
+  "StartClientVersion": 510,
+  "MapFilter": {
+    "IsBlank": false,
+    "HasParcourEnd": false
+  },
+  "MapLists": [
+    {
+      "MapListId": 8370,
+      "Name": "Карты закладки бомбы"
+    }
+  ],
+  "Parameters": {
+    "Bool": [
+      {
+        "Name": "MapRotation",
+        "DisplayName": "GmParams/MapRotation",
+        "Default": true
+      },
+      {
+        "Name": "short_game",
+        "DisplayName": "Короткая игра (16 раундов вместо 30)",
+        "Default": true
+      }
+    ]
+  }
+}
