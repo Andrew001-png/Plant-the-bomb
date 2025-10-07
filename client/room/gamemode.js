@@ -11,7 +11,7 @@ Room.Teams.OnAddTeam.Add(function (t) {
 });
 
 function RGB(r, g, b){
- return new Color(r / 255, g / 255, b / 255, 0);
+ return new Basic.Color(r / 255, g / 255, b / 255, 0);
 };
 
 let CounterTerrorists = lib.CreateTeam("ct", { name: "Спецназ", undername: "Закладка бомбы от just_qstn" }, RGB(70, 130, 180), 1);
