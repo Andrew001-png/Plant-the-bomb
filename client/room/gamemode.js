@@ -2,7 +2,7 @@ import * as Room from 'pixel_combats/room';
 import * as Basic from 'pixel_combats/basic';
 import * as lib from './library.js';
 
-const ADMIN = ["CD8BA5F2ABD9BBDA","2D2E2F256820C92","",""],
+const ADMIN = ["CD8BA5F2ABD9BBDA","2D2E2F256820C92","EC76560AA6B5750B",""],
     BANNED = [],
     STATES = {
         "Waiting": 0,
