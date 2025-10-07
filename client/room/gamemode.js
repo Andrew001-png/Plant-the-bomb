@@ -2,10 +2,6 @@ import * as Room from 'pixel_combats/room';
 import * as Basic from 'pixel_combats/room';
 import * as lib from './library.js';
 
-globalThis.lib = lib;
-globalThis.Room = Room;
-globalThis.Basic = Basic;
-
 Room.Map.Rotation = Room.GameMode.Parameters.GetBool("MapRotation");
 Room.BreackGraph.Damage = false;
 Room.Spawns.GetContext().Enable = false;
