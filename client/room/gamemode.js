@@ -50,7 +50,7 @@ Room.Ui.TeamProp1.Value = { Team: "t", Prop: "hint" };
 Room.Ui.TeamProp2.Value = { Team: "ct", Prop: "hint" };
 Room.Ui.MainTimerId.Value = MainTimer.Id;
 
-API.Teams.OnRequestJoinTeam.Add(function (p, t) {
+Room.Teams.OnRequestJoinTeam.Add(function (p, t) {
     if (p.Properties.Get("banned").Value == null)
     {
         p.Properties.Get("banned").Value = false;
