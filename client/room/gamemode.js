@@ -11,8 +11,8 @@ Room.Teams.OnAddTeam.Add(function (t) {
     t.Properties.Get("wins").Value = 0;
 });
 
-let CounterTerrorists = lib.CreateTeam("ct", { name: "Спецназ", undername: "Закладка бомбы от just_qstn" }, new Basic.Color(64, 224, 208, 0), 1);
-let Terrorists = lib.CreateTeam("t", { name: "Террористы", undername: "Закладка бомбы от just_qstn" }, new Basic.Color(222, 184, 135, 0), 2)
+let CounterTerrorists = lib.CreateTeam("ct", { name: "Спецназ", undername: "Закладка бомбы от just_qstn" }, {64, 224, 208}, 1);
+let Terrorists = lib.CreateTeam("t", { name: "Террористы", undername: "Закладка бомбы от just_qstn" }, {222, 184, 135}, 2)
 
 Room.LeaderBoard.PlayerLeaderBoardValues = [
     {
