@@ -2,7 +2,7 @@ import * as Room from 'pixel_combats/room';
 import * as Basic from 'pixel_combats/basic';
 import * as lib from './library.js';
 
-let Properties = API.Properties.GetContext(), Timers = API.Timers.GetContext(), Ui = API.Ui.GetContext();
+let Properties = Room.Properties.GetContext(), Timers = Room.Timers.GetContext(), Ui = Room.Ui.GetContext();
 let MainTimer = Timers.Get("main"), State = Properties.Get("state"), Blacklist = Properties.Get("banned"), Bomb = Properties.Get("bomb"),
     IsPlanted = Properties.Get("is_planted"), Round = Properties.Get("round");
 
