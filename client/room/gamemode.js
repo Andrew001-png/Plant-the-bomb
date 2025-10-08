@@ -71,7 +71,7 @@ Room.LeaderBoard.PlayersWeightGetter.Set(function (p) {
 Room.Teams.OnRequestJoinTeam.Add(function (p, t) {
     if (p.Properties.Get("banned").Value == null)
     {
-        if (Blacklist.Value.includes(p.Id)) {
+        if (BlackList.Value.includes(p.Id)) {
             
         }
         else {
