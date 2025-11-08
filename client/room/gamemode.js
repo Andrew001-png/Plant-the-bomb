@@ -7,7 +7,7 @@ by just_qstn
 import * as Basic from 'pixel_combats/basic';
 import * as API from 'pixel_combats/room';
 import * as ColorsLib from './colorslib.js';
-import * as JQUtils from './jqutils.js';
+import * as JQUtils from './library.js';
 
 // Константы 
 const ADMIN = ["9DE9DFD7D1F5C16","AEC76560AA6B5750","BACDC54C07D66B94A","2F1955AAE64508B9"],
