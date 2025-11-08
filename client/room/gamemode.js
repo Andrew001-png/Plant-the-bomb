@@ -565,7 +565,7 @@ function StartGame() {
             BanPlayer(p);
         }
     });
-    MainTimer.Restart(LOADING_TIME);
+    MainTimer.Restart(10);
 }
 
 function StartWarmup() {
@@ -591,7 +591,7 @@ function StartWarmup() {
     API.Spawns.GetContext().RespawnEnable = true;
     SpawnPlayers();
     API.room.PopUp("<B>Закладка бомбы от just_qstn\n<size=50><i>Разминка\n\n\n</i></size><size=30>Запрещенные оружия: Катана, СВД, ВСС, РПГ, Мак-11 (пистолет), РПК-74.\n<color=red>ИСПОЛЬЗОВАНИЕ ЗАПРЕЩЕННЫХ ОРУЖИЙ КАРАЕТСЯ БАНОМ!</color></size></B>");
-    MainTimer.Restart(WARMUP_TIME);
+    MainTimer.Restart(90);
 }
 
 function WaitingRound() {
@@ -619,7 +619,7 @@ function WaitingRound() {
         API.AreaViewService.GetContext().Get(areas[i].Name).Color = ColorsLib.Colors.Green;
     }
 
-    MainTimer.Restart(PRE_ROUND_TIME);
+    MainTimer.Restart(45);
 
     SpawnPlayers();
     AddBombToRandom();
