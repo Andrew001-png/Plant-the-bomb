@@ -69,7 +69,7 @@ let MainTimer = Timers.Get("main"), State = Properties.Get("state"), Blacklist =
 
 // Настройки
 API.Map.Rotation = API.GameMode.Parameters.GetBool("MapRotation");
-State.Value = STATES.Waiting;
+State.Value = 0;
 Blacklist.Value = BANNED;
 Bomb.Value = false;
 API.BreackGraph.Damage = false;
@@ -147,7 +147,7 @@ API.Teams.OnRequestJoinTeam.Add(function (p, t) {
         p.Properties.Get("isconnected").Value = null;
     }
     JoinToTeam(p, t);
-    if (!p.Spawns.IsSpawned && (State.Value == STATES.Round || State.Value == STATES.Endround)) {
+    if (!p.Spawns.IsSpawned && (State.Value == 3 || State.Value == 4)) {
         p.Spawns.Spawn();
         p.Spawns.Despawn();
         p.PopUp("Игра уже началась. Ждите конца игры");
@@ -168,14 +168,14 @@ API.Players.OnPlayerConnected.Add(function (p) {
 });
 
 API.Players.OnPlayerDisconnected.Add(function (p) {
-    if (State.Value == STATES.Round) {
+    if (State.Value == 3) {
         if (GetAlivePlayersCount(Terrorists) == 0 && !IsPlanted.Value) return EndRound(CounterTerrorists);
         if (GetAlivePlayersCount(CounterTerrorists) == 0) return EndRound(Terrorists);
     }
 });
 
 API.Properties.OnPlayerProperty.Add(function (c, v) {
-    if (State.Value != STATES.Clearing) {
+    if (State.Value != 7) {
         switch (v.Name) {
             case "Scores":
                 if (v.Value > MAX_MONEY) v.Value = MAX_MONEY;
@@ -196,7 +196,7 @@ API.Properties.OnTeamProperty.Add(function (c, v) {
 });
 
 API.Damage.OnKill.Add(function (p, k) {
-    if (State.Value == STATES.Round || State.Value == STATES.Endround) {
+    if (State.Value == 3 || State.Value == 4) {
         if (k.Team != null && k.Team != p.Team) {
             p.Properties.Kills.Value++;
             p.Properties.Scores.Value += BOUNTY_KILL;
@@ -205,7 +205,7 @@ API.Damage.OnKill.Add(function (p, k) {
 });
 
 API.Damage.OnDeath.Add(function (p) {
-    if (State.Value == STATES.Round || State.Value == STATES.Endround) {
+    if (State.Value == 3 || State.Value == 4) {
         p.Properties.Deaths.Value++;
         p.Properties.Get("defkit").Value = EMPTY;
         if (p.Properties.Get("bomb").Value) Bomb.Value = true;
@@ -225,7 +225,7 @@ function t_HintReset(p, a) {
 
 JQUtils.CreateArea({
     name: "main", tags: ["main"], color: ColorsLib.Colors.Crimson, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.Inventory.Main.Value) return p.Ui.Hint.Value = "Основное оружие уже куплено";
         if (prop.Value) {
@@ -246,7 +246,7 @@ JQUtils.CreateArea({
 
 JQUtils.CreateArea({
     name: "secondary", tags: ["secondary"], color: ColorsLib.Colors.DarkKhaki, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.Inventory.Secondary.Value) return p.Ui.Hint.Value = "Вторичное оружие уже куплено";
         if (prop.Value) {
@@ -267,7 +267,7 @@ JQUtils.CreateArea({
 
 JQUtils.CreateArea({
     name: "explosive", tags: ["explosive"], color: ColorsLib.Colors.Aquamarine, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.Inventory.Explosive.Value) return p.Ui.Hint.Value = "Взрывчатка уже куплена";
         if (prop.Value) {
@@ -288,7 +288,7 @@ JQUtils.CreateArea({
 
 JQUtils.CreateArea({
     name: "defkit", tags: ["defkit"], color: ColorsLib.Colors.Plum, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.Properties.Get("defkit").Value == ENABLED) return p.Ui.Hint.Value = "Набор сапера уже куплен";
         if (prop.Value) {
@@ -309,7 +309,7 @@ JQUtils.CreateArea({
 
 JQUtils.CreateArea({
     name: "helmet", tags: ["helmet"], color: ColorsLib.Colors.SteelBlue, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.contextedProperties.MaxHp.Value >= HELMET_HP) return p.Ui.Hint.Value = "Шлем уже куплен";
         if (prop.Value) {
@@ -331,7 +331,7 @@ JQUtils.CreateArea({
 
 JQUtils.CreateArea({
     name: "armour", tags: ["armour"], color: ColorsLib.Colors.BlueViolet, enter: function (p, a) {
-        if (State.Value != STATES.Preround) return;
+        if (State.Value != 2) return;
         let prop = p.Properties.Get(`${a.Name}_accept`);
         if (p.contextedProperties.MaxHp.Value >= VEST_HP) return p.Ui.Hint.Value = "Бронежилет и шлем уже куплены";
         if (prop.Value) {
@@ -374,13 +374,13 @@ JQUtils.CreateArea({
 let plant = JQUtils.CreateArea({
     name: "plant", tags: ["_plant"], color: ColorsLib.Colors.Green, view: false, enter: function (p, a) {
         if (!IsPlanted.Value && p.Team == Terrorists) {
-            if (State.Value != STATES.Round) return p.Ui.Hint.Value = "Место закладки бомбы";
+            if (State.Value != 2) return p.Ui.Hint.Value = "Место закладки бомбы";
             if (p.Properties.Get("bomb").Value != ENABLED) return p.Ui.Hint.Value = "У вас нет бомбы.";
             p.Ui.Hint.Value = "Ждите " + BOMB_PLANTING_TIME + "сек. в зоне чтобы заложить бомбу";
             return p.Timers.Get("plant" + a.Name).Restart(BOMB_PLANTING_TIME);
         }
         if (IsPlanted.Value && p.Team == CounterTerrorists && API.AreaViewService.GetContext().Get(a.Name).Color.r > 0) {
-            if (State.Value != STATES.Round) return p.Ui.Hint.Value = "Место разминирования бомбы";
+            if (State.Value != 3) return p.Ui.Hint.Value = "Место разминирования бомбы";
             let def_time = p.Properties.Get("defkit").Value == ENABLED ? BOMB_DEFUSEKIT_TIME : BOMB_DEFUSE_TIME;
             p.Ui.Hint.Value = "Ждите " + def_time + "сек. чтобы разминировать бомбу";
             p.Timers.Get("defuse" + a.Name).Restart(def_time);
@@ -395,20 +395,20 @@ let plant = JQUtils.CreateArea({
 // Таймеры
 MainTimer.OnTimer.Add(function () {
     switch (State.Value) {
-        case STATES.Waiting:
+        case 0:
             StartWarmup();
             break;
-        case STATES.Warmup:
+        case 1:
             WaitingRound();
             break;
-        case STATES.Preround:
+        case 2:
             StartRound();
             break;
-        case STATES.Round:
+        case 3:
             if (IsPlanted.Value) EndRound(Terrorists);
             else EndRound(CounterTerrorists);
             break;
-        case STATES.Endround:
+        case 4:
             if (Round.Value == ROUNDS / 2 && !Properties.Get("teams_changed").Value) {
                 MainTimer.Restart(3);
                 TeamChange();
@@ -417,12 +417,12 @@ MainTimer.OnTimer.Add(function () {
             }
             WaitingRound();
             break
-        case STATES.Endgame:
-            State.Value = STATES.Clearing;
+        case 6:
+            State.Value = 7;
             API.Players.All.forEach((p) => { p.Properties.GetProperties().forEach((prop) => { prop.Value = null; }); });
             MainTimer.Restart(10);
             break;
-        case STATES.Clearing:
+        case 7:
             API.Game.RestartGame();
             break;
     }
@@ -434,7 +434,7 @@ API.Timers.OnPlayerTimer.Add(function (timer) {
         if (!timer.Player.IsAlive) return;
         if (timer.Id.slice(0, 5) == "plant") {
             const area_name = timer.Id.replace("plant", "");
-            if (API.AreaViewService.GetContext().Get(area_name).Color.r > 0 || IsPlanted.Value || State.Value != STATES.Round) return;
+            if (API.AreaViewService.GetContext().Get(area_name).Color.r > 0 || IsPlanted.Value || State.Value != 3) return;
             Ui.Hint.Value = "Бомба заложена. Спецназ должен разминировать красную зону.";
             IsPlanted.Value = true;
             MainTimer.Restart(BEFORE_PLANTING_TIME);
@@ -444,7 +444,7 @@ API.Timers.OnPlayerTimer.Add(function (timer) {
         }
         if (timer.Id.slice(0, 6) == "defuse") {
             const area_name = timer.Id.replace("defuse", "");
-            if (API.AreaViewService.GetContext().Get(area_name).Color.r == 0 || State.Value != STATES.Round) return;
+            if (API.AreaViewService.GetContext().Get(area_name).Color.r == 0 || State.Value != 3) return;
             IsPlanted.Value = false;
             timer.Player.Properties.Scores.Value += BOUNTY_DEFUSE;
             API.AreaViewService.GetContext().Get(area_name).Color = ColorsLib.Colors.Green;
@@ -569,7 +569,7 @@ function StartGame() {
 }
 
 function StartWarmup() {
-    State.Value = STATES.Warmup;
+    State.Value = 1;
     API.AreaService.GetByTag("plant").forEach((a) => {
         a.Ranges.All.forEach((range) => {
             const letters = "qwertyuiopasdfghjklzxcvbnmm1234567890";
@@ -595,7 +595,7 @@ function StartWarmup() {
 }
 
 function WaitingRound() {
-    State.Value = STATES.Preround;
+    State.Value = 2;
 
     API.MapEditor.SetBlock(API.AreaService.Get("bd"), 93);
     API.MapEditor.SetBlock(API.AreaService.Get("bd"), 93);
@@ -633,7 +633,7 @@ function StartRound() {
     AreasEnable(false);
 
     API.Damage.GetContext().DamageIn.Value = true;
-    State.Value = STATES.Round;
+    State.Value = 3;
     API.Spawns.GetContext().RespawnEnable = false;
 
     Ui.Hint.Value = `Закладка бомбы.\nРаунд ${(Round.Value + 1)}/${ROUNDS}`;
@@ -645,7 +645,7 @@ function StartRound() {
 
 function EndRound(t) {
     JQUtils.pcall(() => {
-        State.Value = STATES.Endround;
+        State.Value = 4;
         API.Damage.GetContext().DamageIn.Value = false;
         Properties.Get("addedBomb").Value = false;
         IsPlanted.Value = false;
@@ -671,6 +671,6 @@ function EndGame() {
     const Winner = CounterTerrorists.Properties.Get("wins").Value > Terrorists.Properties.Get("wins").Value ? CounterTerrorists : Terrorists;
     API.room.PopUp(`<B>Закладка бомбы от just_qstn\n<size=50><i>${Winner == CounterTerrorists ? "Победил спецназ" : "Победили террористы"}</i></size></B>`);
     API.Game.GameOver(Winner);
-    State.Value = STATES.Endgame;
+    State.Value = 6;
     MainTimer.Restart(END_TIME);
 }
