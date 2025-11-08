@@ -1,120 +1,131 @@
-import { Color } from 'pixel_combats/basic';
-
-/* 
-Hex-строка в формате RGB (альфа канал пуст)
-ex: ColorsLib.HexToRGB("#43ff64");
-*/
-export function HexToRGB(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? new Color(parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 0) : null;
-};
-
-/* 
-Hex-строка в формате RGBA 
-ex: ColorsLib.HexToRGBA("#43ff64d9");
-*/
-export function HexToRGBA(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? new Color(parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), parseInt(result[4], 16)) : null;
-};
-
+import * as API from 'pixel_combats/room';
 /*
-ex: ColorsLib.RGB(255, 0, 255); // Вернет фиолетовый/сиреневый цвет
+Генерация случайной строки
 */
-export function RGB(r, g, b) {
-    return new Color(r / 255, g / 255, b / 255, 0);
-};
 
-/*
-ex: ColorsLib.RGBA(255, 0, 255, 0.25); // Вернет пастельный фиолетовый/сиреневый цвет
-*/
-export function RGBA(r, g, b, a) {
-    return new Color(r / 255, g / 255, b / 255, a / 100);
-};
-
-/*
-
-*/
-function componentToHex(c) {
-    let hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
+export function RandomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
 }
 
 /*
-Из цвета сделает Hex-строку.
-Полезно, если нужно синхронизировать цвет зоны и цвет команды.
+Функция создания команды
+string tag - id/тег команды 
+object name - имя команды. 
+поля объекта: 
+  string name (название), 
+  string undername (текст под названием команды),
+  bool isPretty (нужно ли красивое название)
+{name: "Синие", undername: "Модуль от just_qstn", isPretty: true}
+number/Index - спавнпоинт. необязательный параметр
+
+ex: CreateTeam("1", {name: "Текст сверху", undername: "текст снизу", isPretty: true}, new Color(1, 0, 0, 0));
 */
-export function ColorToHex(color) {
-    return `#${componentToHex(Math.floor(color.r * 255))}${componentToHex(Math.floor(color.g * 255))}${componentToHex(Math.floor(color.b * 255))}`;
+export function CreateTeam(tag, name, color, spawnpoint) {
+    if (name.isPretty) {
+        API.Teams.Add(tag, `<i><B><size=36>${name.name[0]}</size><size=27>${name.name.slice(1)}</size></B>\n${name.undername}</i>`, color);
+    }
+    else {
+        API.Teams.Add(tag, name.name, color);
+    }
+
+    let team = API.Teams.Get(tag);
+    if (spawnpoint) team.Spawns.SpawnPointsGroups.Add(spawnpoint);
+    return team;
 }
 
 /*
--- Цвета --
-Если ссытесь насчет "оптимизации" - закомментируйте часть цветов
-ex: ColorsLib.Red;
+Функция создания зоны
+object params - параметры зоны
+поля объекта:
+  string name: id зоны
+  string[] tags: массив тегов
+  Color color: цвет зоны
+  bool view: включен ли визуализатор. по умолчанию true
+  bool trigger: включен ли триггер. по умолчанию true 
+  function enter: функция, выполняющаяся при входе в зону
+  functiom exit: функция, выполняющаяся при выходе из зоны
+ex: CreateArea({name: "ex", tags: ["tag"], color: new Color(1, 1, 1, 0), enter: function(player, area) { player.Ui.Hint.Value = "вы вошли в зону"; } });
 */
-export const Colors = {
-    // Основная группа
-    Red: new Color(1, 0, 0, 0),
-    Blue: new Color(0, 0, 1, 0),
-    Green: new Color(0, 0.7, 0, 0),
-    Yellow: new Color(1, 1, 0, 0),
-    Magenta: new Color(1, 0, 1, 0),
-    Cyan: new Color(0, 1, 1, 0),
-    Purple: new Color(0.7, 0, 0.7, 0),
-    Lime: new Color(0, 1, 0, 0),
-    White: new Color(1, 1, 1, 0),
-    Black: new Color(0, 0, 0, 0),
-    Gray: new Color(0.5, 0.5, 0.5, 0),
-    Orange: new Color(1, 0.7, 0, 0),
 
-    // Оттенки
-    // Взяты с сайта https://colorscheme.ru/html-colors.html, можете посмотреть что представляет из себя каждый цвет
-    Gold: RGB(255, 215, 0),
-    Moccasin: RGB(255, 228, 181),
-    Khaki: RGB(240, 230, 140),
-    DarkKhaki: RGB(189, 183, 107),
-    OrangeRed: RGB(255, 69, 0),
-    Pink: RGB(255, 192, 203),
-    HotPink: RGB(255, 105, 180),
-    MediumVioletRed: RGB(199, 21, 133),
-    DarkRed: RGB(139, 0, 0),
-    IndianRed: RGB(205, 92, 92),
-    Salmon: RGB(250, 128, 114),
-    Crimson: RGB(220, 20, 60),
-    Lavender: RGB(230, 230, 250),
-    Plum: RGB(221, 160, 221),
-    MediumPurple: RGB(147, 112, 219),
-    BlueViolet: RGB(138, 43, 226),
-    DarkViolet: RGB(148, 0, 211),
-    DarkMagenta: RGB(139, 0, 139),
-    Indigo: RGB(75, 0, 130),
-    Bisque: RGB(255, 228, 196),
-    BurlyWood: RGB(222, 184, 135),
-    SandyBrown: RGB(244, 164, 96),
-    Chocolate: RGB(210, 105, 30),
-    Brown: RGB(165, 42, 42),
-    Sienna: RGB(160, 82, 45),
-    LightGray: RGB(211, 211, 211),
-    DarkGray: RGB(169, 169, 169),
-    Silver: RGB(192, 192, 192),
-    LightSlateGray: RGB(119, 136, 153),
-    SlateGray: RGB(112, 128, 144),
-    DarkSlateGray: RGB(47, 79, 79),
-    MistyRose: RGB(255, 228, 225),
-    AntiqueWhite: RGB(250, 235, 215),
-    Aquamarine: RGB(127, 255, 212),
-    Turquoise: RGB(64, 224, 208),
-    SteelBlue: RGB(70, 130, 180),
-    SkyBlue: RGB(135, 206, 235),
-    DeepSkyBlue: RGB(0, 191, 255),
-    DogherBlue: RGB(30, 144, 255),
-    RoyalBlue: RGB(65, 105, 225),
-    DarkBlue: RGB(0, 0, 139),
-    GreenYellow: RGB(173, 255, 47),
-    MediumSpringGreen: RGB(0, 250, 154),
-    SpringGreen: RGB(0, 255, 127),
-    DarkSeaGreen: RGB(143, 188, 143),
-    Teal: RGB(0, 128, 128),
-    LightGreen: RGB(144, 238, 144),
+export function CreateArea(params) {
+    let t = API.AreaPlayerTriggerService.Get(params.name), v = API.AreaViewService.GetContext().Get(params.name);
+    v.Tags = params.tags;
+    t.Tags = params.tags;
+    v.Color = params.color;
+    v.Enable = params.view || true;
+    t.Enable = params.trigger || true;
+    if (params.enter) t.OnEnter.Add(params.enter);
+    if (params.exit) t.OnExit.Add(params.exit);
+    return { Trigger: t, View: t };
+}
+
+/*
+pcall - бертка для try catch
+Вернет 0 если нет ошибок, вернет 1 если есть
+Чтобы вам показало ошибку пишите параметр log true
+ex: pcall(function() { Basic.Msg.Show("Вызвано через защищенный вызов");});
+*/
+
+export function pcall(func, log = true) {
+    try {
+        func();
+    }
+    catch (e) {
+        if (log) API.room.PopUp(`Error!\nName: ${e.name}\nDescription:${e.message}\nStack:${e.stack}`);
+        return 1;
+    }
+    return 0;
+}
+
+/*
+Выполнение кода с задержкой
+Использовать аккуратно, может быть многозатратной операцией
+*/
+export function SetTimeout(callback, interval)
+{
+    const timer = API.Timers.GetContext().Get(RandomString(6));
+
+    function _timer()
+    {
+        callback();
+        
+        timer.Remove(_timer);
+    }
+    timer.OnTimer.Add(_timer);
+    timer.Restart(interval);
+}
+
+
+/*
+Создание бесконечного таймера с любой задержкой.
+Внимание, включается через одну секунду!
+Если интервал меньше единицы, то желательно делать его кратным двойке (потому что я так сказал), а также
+не делать тысячные и так далее разряды.
+Работает сразу после создания.
+*/
+
+export function JQTimer(callback, interval)
+{
+    if (interval < 1) {
+        for (let i = 0; i < 1; i += interval)
+        {
+            const timer = API.Timers.GetContext().Get(RandomString(6));
+            timer.OnTimer.Add(callback);
+            timer.RestartLoop(1 + i);
+        }
+    } 
+    else {
+        const timer = API.Timers.GetContext().Get(RandomString(6));
+        timer.OnTimer.Add(callback);
+        timer.RestartLoop(interval);
+        return timer;
+    }
 }
